@@ -164,10 +164,10 @@ namespace PerformanceEvaluator.WEB.Domain
 
             for (int i = 0; i < NumberOfPageRequests; i++)
             {
-                var responseTime = GetResponseTime(url);
+                var responseTimeSpan = GetResponseTimeSpan(url);
                 var responseTimeInstance = new ResponseTime()
                 {
-                    Time = responseTime.Milliseconds
+                    Time = responseTimeSpan.Milliseconds
                 };
                 responseTimes.Add(responseTimeInstance);
             }
@@ -175,7 +175,7 @@ namespace PerformanceEvaluator.WEB.Domain
             return responseTimes;
         }
 
-        private TimeSpan GetResponseTime(string url)
+        private TimeSpan GetResponseTimeSpan(string url)
         {
             var request = (HttpWebRequest)WebRequest.Create(url);
             var timer = new Stopwatch();
