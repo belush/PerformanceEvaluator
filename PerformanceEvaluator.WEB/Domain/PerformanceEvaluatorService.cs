@@ -11,66 +11,12 @@ namespace PerformanceEvaluator.WEB.Domain
 {
     public class PerformanceEvaluatorService
     {
-        private static object syncRoot = new object();
-        private static int[] pagesProcessedNumber = new int[2];
+        private static readonly object syncRoot = new object();
+        private static readonly int[] pagesProcessedNumber = new int[2];
+        private const int NumberOfPageRequests = 5;
+        private const int LimitNumberOfUrls = 15;
 
-        public List<PageModel> GetPageModels(string urlText)
-        {
-            var requestsNumber = 5;
-            var urls = GetUrlsFromPage(urlText);
-            var pages = new List<PageModel>();
-            //get only 15 records to see result faster
-            urls = GetUrls(urls, 15);
-
-            foreach (var url in urls)
-            {
-                try
-                {
-                    var responseTimes = new List<ResponseTime>();
-
-                    for (int i = 0; i < requestsNumber; i++)
-                    {
-                        var responseTime = GetResponseTime(url);
-                        responseTimes.Add(new ResponseTime()
-                        {
-                            Time = responseTime.Milliseconds
-                        });
-                    }
-
-                    pages.Add(new PageModel()
-                    {
-                        Url = url,
-                        ResponseTimes = responseTimes
-                    });
-
-                    lock (syncRoot)
-                    {
-                        pagesProcessedNumber[0] = pages.Count;
-                        pagesProcessedNumber[1] = urls.Count;
-                    }
-                    
-                }
-                catch (Exception) { } //TODO: handle exceptions
-            }
-
-            pages.Sort();
-
-            lock (syncRoot)
-            {
-                pagesProcessedNumber[0] = 0;
-            }
-
-            return pages;
-        }
-
-        public int[] GetPagesProcessedNumber()
-        {
-            lock (syncRoot)
-            {
-                return pagesProcessedNumber;
-            }
-        }
-
+        //TODO: implement Automapper
         public List<PageModel> GetPageModels(List<Page> pages)
         {
             var pageModels = new List<PageModel>();
@@ -85,6 +31,18 @@ namespace PerformanceEvaluator.WEB.Domain
             }
 
             return pageModels;
+        }
+
+        /// <summary>
+        /// Get two values: number of processed pages and total number of pages
+        /// </summary>
+        /// <returns></returns>
+        public int[] GetPagesProcessedNumber()
+        {
+            lock (syncRoot)
+            {
+                return pagesProcessedNumber;
+            }
         }
 
         public List<Page> GetPages(List<PageModel> pageModels)
@@ -103,6 +61,11 @@ namespace PerformanceEvaluator.WEB.Domain
             return pages;
         }
 
+        /// <summary>
+        /// Get website entity with pages response data
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
         public Website GetWebsite(string url)
         {
             var pageModels = GetPageModels(url);
@@ -116,14 +79,54 @@ namespace PerformanceEvaluator.WEB.Domain
             return website;
         }
 
-        private List<string> GetUrls(List<string> urls, int urlsMaxNumber = 100)
+        private List<PageModel> GetPageModels(string urlText)
         {
-            if (urls.Count < urlsMaxNumber)
+            var urls = GetUrlsFromPage(urlText);
+            urls = GetLimitedNumberOfUrls(urls);
+            var pages = new List<PageModel>();
+
+            foreach (var url in urls)
             {
-                urlsMaxNumber = urls.Count;
+                try
+                {
+                    var responseTimes = GetResponseTimes(url);
+                    var pageModel = new PageModel()
+                    {
+                        Url = url,
+                        ResponseTimes = responseTimes
+                    };
+                    pages.Add(pageModel);
+
+                    lock (syncRoot)
+                    {
+                        pagesProcessedNumber[0] = pages.Count;
+                        pagesProcessedNumber[1] = urls.Count;
+                    }
+
+                }
+                catch (Exception) { } //TODO: handle exceptions
             }
 
-            urls = urls.GetRange(0, urlsMaxNumber);
+            pages.Sort();
+
+            lock (syncRoot)
+            {
+                pagesProcessedNumber[0] = 0;
+            }
+
+            return pages;
+        }
+
+        private List<string> GetLimitedNumberOfUrls(List<string> urls)
+        {
+            var limitNumberOfUrls = LimitNumberOfUrls;
+
+            if (urls.Count < limitNumberOfUrls)
+            {
+                limitNumberOfUrls = urls.Count;
+            }
+
+            urls = urls.GetRange(0, limitNumberOfUrls);
             return urls;
         }
 
@@ -153,6 +156,23 @@ namespace PerformanceEvaluator.WEB.Domain
             catch (Exception) { }
 
             return urls;
+        }
+
+        private List<ResponseTime> GetResponseTimes(string url)
+        {
+            var responseTimes = new List<ResponseTime>();
+
+            for (int i = 0; i < NumberOfPageRequests; i++)
+            {
+                var responseTime = GetResponseTime(url);
+                var responseTimeInstance = new ResponseTime()
+                {
+                    Time = responseTime.Milliseconds
+                };
+                responseTimes.Add(responseTimeInstance);
+            }
+
+            return responseTimes;
         }
 
         private TimeSpan GetResponseTime(string url)
