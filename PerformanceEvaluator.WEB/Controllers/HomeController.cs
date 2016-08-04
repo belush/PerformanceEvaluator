@@ -1,6 +1,10 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
+using AutoMapper;
+using PerformanceEvaluator.DAL.Entities;
 using PerformanceEvaluator.WEB.Domain;
+using PerformanceEvaluator.WEB.Models;
 
 namespace PerformanceEvaluator.WEB.Controllers
 {
@@ -8,9 +12,17 @@ namespace PerformanceEvaluator.WEB.Controllers
     {
         readonly PerformanceEvaluatorService _evaluatorService;
         readonly WebsiteService _websiteService;
+        private readonly IMapper _mapper;
 
         public HomeController()
         {
+           var mapper = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<Page, PageModel>().ReverseMap();
+                cfg.CreateMap<Website, WebsiteModel>();
+            });
+
+            _mapper = mapper.CreateMapper();
             _websiteService = new WebsiteService();
             _evaluatorService = new PerformanceEvaluatorService();
         }
@@ -35,7 +47,7 @@ namespace PerformanceEvaluator.WEB.Controllers
                 _websiteService.Add(website);
             }
 
-            var pageModels = _evaluatorService.GetPageModels(website.Pages.ToList());
+            var pageModels = _mapper.Map<ICollection<Page>, List<PageModel>>(website.Pages);
 
             return Json(pageModels, JsonRequestBehavior.AllowGet);
         }
@@ -50,7 +62,7 @@ namespace PerformanceEvaluator.WEB.Controllers
         public JsonResult ShowWebsite(int id)
         {
             var website = _websiteService.Get(id);
-            var pageModels = _evaluatorService.GetPageModels(website.Pages.ToList());
+            var pageModels = _mapper.Map<ICollection<Page>, List<PageModel>>(website.Pages);
 
             return Json(pageModels, JsonRequestBehavior.AllowGet);
         }
@@ -58,7 +70,7 @@ namespace PerformanceEvaluator.WEB.Controllers
         public JsonResult GetWebsites()
         {
             var websites = _websiteService.GetAll().ToList();
-            var websiteModels = _websiteService.GetWebsiteModels(websites);
+            var websiteModels = _mapper.Map<List<Website>, List<WebsiteModel>>(websites);
             websiteModels = websiteModels.OrderByDescending(w => w.Id).ToList();
 
             return Json(websiteModels, JsonRequestBehavior.AllowGet);

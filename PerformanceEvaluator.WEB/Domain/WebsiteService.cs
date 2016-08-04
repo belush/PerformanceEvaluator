@@ -28,22 +28,5 @@ namespace PerformanceEvaluator.WEB.Domain
         {
             return _repository.GetAll();
         }
-
-        //TODO: implement Automapper
-        public List<WebsiteModel> GetWebsiteModels(List<Website> websites)
-        {
-            var websiteModels = new List<WebsiteModel>();
-
-            foreach (var website in websites)
-            {
-                websiteModels.Add(new WebsiteModel()
-                {
-                    Url = website.Url,
-                    Id = website.Id
-                });
-            }
-
-            return websiteModels;
-        }
     }
 }

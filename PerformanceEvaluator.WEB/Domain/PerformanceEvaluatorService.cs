@@ -15,24 +15,7 @@ namespace PerformanceEvaluator.WEB.Domain
         private static readonly int[] pagesProcessedNumber = new int[2];
         private const int NumberOfPageRequests = 5;
         private const int LimitNumberOfUrls = 15;
-
-        //TODO: implement Automapper
-        public List<PageModel> GetPageModels(List<Page> pages)
-        {
-            var pageModels = new List<PageModel>();
-
-            foreach (var page in pages)
-            {
-                pageModels.Add(new PageModel()
-                {
-                    Url = page.Url,
-                    ResponseTimes = page.ResponseTimes.ToList()
-                });
-            }
-
-            return pageModels;
-        }
-
+        
         /// <summary>
         /// Get two values: number of processed pages and total number of pages
         /// </summary>
