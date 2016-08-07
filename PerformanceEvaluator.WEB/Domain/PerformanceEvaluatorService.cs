@@ -27,23 +27,7 @@ namespace PerformanceEvaluator.WEB.Domain
                 return pagesProcessedNumber;
             }
         }
-
-        public List<Page> GetPages(List<PageModel> pageModels)
-        {
-            var pages = new List<Page>();
-
-            foreach (var pageModel in pageModels)
-            {
-                pages.Add(new Page()
-                {
-                    Url = pageModel.Url,
-                    ResponseTimes = pageModel.ResponseTimes
-                });
-            }
-
-            return pages;
-        }
-
+      
         /// <summary>
         /// Get website entity with pages response data
         /// </summary>
@@ -51,13 +35,15 @@ namespace PerformanceEvaluator.WEB.Domain
         /// <returns></returns>
         public Website GetWebsite(string url)
         {
-            var pageModels = GetPageModels(url);
-            var pages = GetPages(pageModels);
-            var website = new Website()
+            var website = new Website();
+
+            if (!string.IsNullOrEmpty(url))
             {
-                Pages = pages,
-                Url = url
-            };
+                var pageModels = GetPageModels(url);
+                var pages = GetPages(pageModels);
+                website.Pages = pages;
+                website.Url = url;
+            }
 
             return website;
         }
@@ -180,6 +166,22 @@ namespace PerformanceEvaluator.WEB.Domain
             }
 
             return uri.ToString();
+        }
+
+        private List<Page> GetPages(List<PageModel> pageModels)
+        {
+            var pages = new List<Page>();
+
+            foreach (var pageModel in pageModels)
+            {
+                pages.Add(new Page()
+                {
+                    Url = pageModel.Url,
+                    ResponseTimes = pageModel.ResponseTimes
+                });
+            }
+
+            return pages;
         }
     }
 }

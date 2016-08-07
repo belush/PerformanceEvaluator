@@ -16,7 +16,10 @@ namespace PerformanceEvaluator.WEB.Domain
 
         public void Add(Website website)
         {
-            _repository.Add(website);
+            if (website != null)
+            {
+                _repository.Add(website);
+            }
         }
 
         public Website Get(int id)
