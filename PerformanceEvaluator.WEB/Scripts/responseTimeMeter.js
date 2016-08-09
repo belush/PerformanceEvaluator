@@ -1,5 +1,5 @@
 ﻿function measureResponseTime() {
-    //hideInfoMessagehideInfoMessage();
+    hideInfoMessage();
     $("#helpContainer").hide();
     var urlText = $("#urlText").val();
     var result = urlText.match("^(https?://)(www\\.)?([-a-z0-9]{1,63}\\.)*?[a-z0-9][-a-z0-9]{0,61}[a-z0-9]\\.[a-z]{2,6}(/[-\\w@\\+\\.~#\\?&/=%]*)?$");
@@ -24,7 +24,7 @@ function getResponseTime(urlText) {
     result.done(drawChart);
     result.done(getWebsitesHistory);
    
-    result.fail(showGettingResponseTimeErrorMsg);
+    result.fail(showCalculatingResponseTimeErrorMsg);
 }
 
 function hideProgressBar() {
@@ -173,8 +173,9 @@ function showCheckUrlInfoMessage() {
     $("#infoMessage").show();
 }
 
-function showGettingResponseTimeErrorMsg() {
-    var messageText = "Getting response time error";
+function showCalculatingResponseTimeErrorMsg() {
+    hideProgressBar();
+    var messageText = "Calculating response time error, please try another URL";
     $("#infoMessage").html(messageText);
     $("#infoMessage").show();
 }

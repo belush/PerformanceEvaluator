@@ -54,7 +54,7 @@ textarea {
 }
 
 #infoMessage {
-   display: ;
+   display: block;
    color: blue;
 }
 

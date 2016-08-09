@@ -12,6 +12,8 @@ namespace PerformanceEvaluator.WEB.Domain
     public class PerformanceEvaluatorService
     {
         private static readonly object SyncRoot = new object();
+        //first parameter - processed pages number
+        //second parameter - total pages number
         private static readonly int[] PagesProcessedNumber = new int[2];
         private const int NumberOfPageRequests = 5;
         private const int LimitNumberOfUrls = 15;
@@ -56,26 +58,18 @@ namespace PerformanceEvaluator.WEB.Domain
 
             foreach (var url in urls)
             {
-                try
+                var responseTimes = GetResponseTimes(url);
+                var pageModel = new PageResponseModel()
                 {
-                    var responseTimes = GetResponseTimes(url);
-                    var pageModel = new PageResponseModel()
-                    {
-                        Url = url,
-                        ResponseTimes = responseTimes
-                    };
-                    pages.Add(pageModel);
+                    Url = url,
+                    ResponseTimes = responseTimes
+                };
+                pages.Add(pageModel);
 
-                    lock (SyncRoot)
-                    {
-                        PagesProcessedNumber[0] = pages.Count;
-                        PagesProcessedNumber[1] = urls.Count;
-                    }
-
-                }
-                catch (Exception)
+                lock (SyncRoot)
                 {
-                    //TODO: handle exceptions  
+                    PagesProcessedNumber[0] = pages.Count;
+                    PagesProcessedNumber[1] = urls.Count;
                 }
             }
 
@@ -105,30 +99,22 @@ namespace PerformanceEvaluator.WEB.Domain
         private List<string> GetUrlsFromPage(string url)
         {
             var urls = new List<string>();
+            var web = new HtmlWeb();
+            var page = web.Load(url);
+            var linkNodes = page.DocumentNode.SelectNodes("//a[@href]");
 
-            try
+            foreach (var linkNode in linkNodes)
             {
-                var web = new HtmlWeb();
-                var page = web.Load(url);
-                var linkNodes = page.DocumentNode.SelectNodes("//a[@href]");
+                var hrefText = linkNode.Attributes["href"].Value;
+                var absoluteUrl = GetAbsoluteUrl(url, hrefText);
 
-                foreach (var linkNode in linkNodes)
+                if (absoluteUrl.Contains(url))
                 {
-                    var hrefText = linkNode.Attributes["href"].Value;
-                    var absoluteUrl = GetAbsoluteUrl(url, hrefText);
-
-                    if (absoluteUrl.Contains(url))
-                    {
-                        urls.Add(absoluteUrl);
-                    }
+                    urls.Add(absoluteUrl);
                 }
+            }
 
-                urls = urls.Distinct().ToList();
-            }
-            catch (Exception)
-            {
-                
-            }
+            urls = urls.Distinct().ToList();
 
             return urls;
         }
@@ -152,10 +138,10 @@ namespace PerformanceEvaluator.WEB.Domain
 
         private TimeSpan CalculateResponseTime(string url)
         {
-            var request = (HttpWebRequest)WebRequest.Create(url);
+            var request = (HttpWebRequest) WebRequest.Create(url);
             var timer = new Stopwatch();
             timer.Start();
-            var response = (HttpWebResponse)request.GetResponse();
+            var response = (HttpWebResponse) request.GetResponse();
             timer.Stop();
             var responseTime = timer.Elapsed;
 
