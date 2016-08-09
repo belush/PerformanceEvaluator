@@ -10,15 +10,15 @@ namespace PerformanceEvaluator.WEB.Controllers
 {
     public class HomeController : Controller
     {
-        readonly PerformanceEvaluatorService _evaluatorService;
-        readonly WebsiteService _websiteService;
+        private readonly PerformanceEvaluatorService _evaluatorService;
+        private readonly WebsiteService _websiteService;
         private readonly IMapper _mapper;
 
         public HomeController()
         {
            var mapper = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<Page, PageModel>().ReverseMap();
+                cfg.CreateMap<PageResponse, PageResponseModel>().ReverseMap();
                 cfg.CreateMap<Website, WebsiteModel>();
             });
 
@@ -47,7 +47,7 @@ namespace PerformanceEvaluator.WEB.Controllers
                 _websiteService.Add(website);
             }
 
-            var pageModels = _mapper.Map<ICollection<Page>, List<PageModel>>(website.Pages);
+            var pageModels = _mapper.Map<ICollection<PageResponse>, List<PageResponseModel>>(website.Pages);
             
             return Json(pageModels, JsonRequestBehavior.AllowGet);
         }
@@ -62,7 +62,7 @@ namespace PerformanceEvaluator.WEB.Controllers
         public JsonResult ShowWebsite(int id)
         {
             var website = _websiteService.Get(id);
-            var pageModels = _mapper.Map<ICollection<Page>, List<PageModel>>(website.Pages);
+            var pageModels = _mapper.Map<ICollection<PageResponse>, List<PageResponseModel>>(website.Pages);
 
             return Json(pageModels, JsonRequestBehavior.AllowGet);
         }

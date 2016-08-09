@@ -11,7 +11,7 @@ namespace PerformanceEvaluator.DAL.Context
         }
 
         public virtual DbSet<Website> Websites { get; set; }
-        public virtual DbSet<Page> Pages { get; set; }
+        public virtual DbSet<PageResponse> Pages { get; set; }
         public virtual DbSet<ResponseTime> RequestTimes { get; set; }
     }
 }

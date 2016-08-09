@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using PerformanceEvaluator.DAL.Entities;
 
 namespace PerformanceEvaluator.WEB.Models
 {
-    public class PageModel : IComparable<PageModel>
+    public class PageResponseModel : IComparable<PageResponseModel>
     {
         public string Url { get; set; }
-        public List<ResponseTime> ResponseTimes { get; set; }
 
+        public List<ResponseTime> ResponseTimes { get; set; }
+        //average response time
         public int MidResponseTime
         {
             get
@@ -19,7 +19,8 @@ namespace PerformanceEvaluator.WEB.Models
             }
         }
 
-        public int MinResponseTime {
+        public int MinResponseTime
+        {
             get
             {
                 return ResponseTimes.Min(r => r.Time);
@@ -34,7 +35,7 @@ namespace PerformanceEvaluator.WEB.Models
             }
         }
 
-        public int CompareTo(PageModel other)
+        public int CompareTo(PageResponseModel other)
         {
             return other.MidResponseTime.CompareTo(MidResponseTime);
         }

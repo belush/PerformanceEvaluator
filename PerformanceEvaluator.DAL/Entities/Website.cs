@@ -7,6 +7,6 @@ namespace PerformanceEvaluator.DAL.Entities
         public int Id { get; set; }
         public string Url { get; set; }
 
-        public virtual ICollection<Page> Pages { get; set; }
+        public virtual ICollection<PageResponse> Pages { get; set; }
     }
 }

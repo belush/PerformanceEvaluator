@@ -47,7 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Context\PerformanceEvaluatorContext.cs" />
-    <Compile Include="Entities\Page.cs" />
+    <Compile Include="Entities\PageResponse.cs" />
     <Compile Include="Entities\ResponseTime.cs" />
     <Compile Include="Entities\Website.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

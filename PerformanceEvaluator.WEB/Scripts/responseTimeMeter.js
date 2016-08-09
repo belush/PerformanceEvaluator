@@ -138,13 +138,13 @@ function showResultTable(data) {
     if (data.length > 0) {
         var tableHtml = "<tr>" +
                             "<th colspan=\"3\">Response time (ms)</th>" +
-                            "<th rowspan=\"2\">Page URL</th>" +
+                            "<th rowspan=\"2\">PageResponse URL</th>" +
                         "</tr>"+
                         "<tr>" +
                             "<th>Min</th>" +
                             "<th>Mid</th>" +
                             "<th>Max</th>" +
-                            //"<th>Page URL</th>" +
+                            //"<th>PageResponse URL</th>" +
                         "</tr>";
 
         for (var i = 0; i < data.length; i++) {

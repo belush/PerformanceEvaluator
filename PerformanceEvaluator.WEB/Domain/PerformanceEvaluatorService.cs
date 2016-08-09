@@ -11,8 +11,8 @@ namespace PerformanceEvaluator.WEB.Domain
 {
     public class PerformanceEvaluatorService
     {
-        private static readonly object syncRoot = new object();
-        private static readonly int[] pagesProcessedNumber = new int[2];
+        private static readonly object SyncRoot = new object();
+        private static readonly int[] PagesProcessedNumber = new int[2];
         private const int NumberOfPageRequests = 5;
         private const int LimitNumberOfUrls = 15;
         
@@ -22,9 +22,9 @@ namespace PerformanceEvaluator.WEB.Domain
         /// <returns></returns>
         public int[] GetPagesProcessedNumber()
         {
-            lock (syncRoot)
+            lock (SyncRoot)
             {
-                return pagesProcessedNumber;
+                return PagesProcessedNumber;
             }
         }
       
@@ -48,39 +48,42 @@ namespace PerformanceEvaluator.WEB.Domain
             return website;
         }
 
-        private List<PageModel> GetPageModels(string urlText)
+        private List<PageResponseModel> GetPageModels(string urlText)
         {
             var urls = GetUrlsFromPage(urlText);
             urls = GetLimitedNumberOfUrls(urls);
-            var pages = new List<PageModel>();
+            var pages = new List<PageResponseModel>();
 
             foreach (var url in urls)
             {
                 try
                 {
                     var responseTimes = GetResponseTimes(url);
-                    var pageModel = new PageModel()
+                    var pageModel = new PageResponseModel()
                     {
                         Url = url,
                         ResponseTimes = responseTimes
                     };
                     pages.Add(pageModel);
 
-                    lock (syncRoot)
+                    lock (SyncRoot)
                     {
-                        pagesProcessedNumber[0] = pages.Count;
-                        pagesProcessedNumber[1] = urls.Count;
+                        PagesProcessedNumber[0] = pages.Count;
+                        PagesProcessedNumber[1] = urls.Count;
                     }
 
                 }
-                catch (Exception) { } //TODO: handle exceptions
+                catch (Exception)
+                {
+                    //TODO: handle exceptions  
+                }
             }
 
             pages.Sort();
 
-            lock (syncRoot)
+            lock (SyncRoot)
             {
-                pagesProcessedNumber[0] = 0;
+                PagesProcessedNumber[0] = 0;
             }
 
             return pages;
@@ -122,7 +125,10 @@ namespace PerformanceEvaluator.WEB.Domain
 
                 urls = urls.Distinct().ToList();
             }
-            catch (Exception) { }
+            catch (Exception)
+            {
+                
+            }
 
             return urls;
         }
@@ -133,7 +139,7 @@ namespace PerformanceEvaluator.WEB.Domain
 
             for (int i = 0; i < NumberOfPageRequests; i++)
             {
-                var responseTimeSpan = GetResponseTimeSpan(url);
+                var responseTimeSpan = CalculateResponseTime(url);
                 var responseTimeInstance = new ResponseTime()
                 {
                     Time = responseTimeSpan.Milliseconds
@@ -144,7 +150,7 @@ namespace PerformanceEvaluator.WEB.Domain
             return responseTimes;
         }
 
-        private TimeSpan GetResponseTimeSpan(string url)
+        private TimeSpan CalculateResponseTime(string url)
         {
             var request = (HttpWebRequest)WebRequest.Create(url);
             var timer = new Stopwatch();
@@ -168,13 +174,13 @@ namespace PerformanceEvaluator.WEB.Domain
             return uri.ToString();
         }
 
-        private List<Page> GetPages(List<PageModel> pageModels)
+        private List<PageResponse> GetPages(List<PageResponseModel> pageModels)
         {
-            var pages = new List<Page>();
+            var pages = new List<PageResponse>();
 
             foreach (var pageModel in pageModels)
             {
-                pages.Add(new Page()
+                pages.Add(new PageResponse()
                 {
                     Url = pageModel.Url,
                     ResponseTimes = pageModel.ResponseTimes
