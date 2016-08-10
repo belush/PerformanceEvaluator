@@ -117,6 +117,7 @@
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Domain\ErrorLoggingService.cs" />
     <Compile Include="Domain\PerformanceEvaluatorService.cs" />
     <Compile Include="Domain\WebsiteService.cs" />
     <Compile Include="Global.asax.cs">

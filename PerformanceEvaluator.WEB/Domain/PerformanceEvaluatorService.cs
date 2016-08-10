@@ -17,7 +17,13 @@ namespace PerformanceEvaluator.WEB.Domain
         private static readonly int[] PagesProcessedNumber = new int[2];
         private const int NumberOfPageRequests = 5;
         private const int LimitNumberOfUrls = 15;
-        
+        private ErrorLoggingService _errorLoggingService;
+
+        public PerformanceEvaluatorService()
+        {
+            _errorLoggingService = new ErrorLoggingService();
+        }
+
         /// <summary>
         /// Get two values: number of processed pages and total number of pages
         /// </summary>
@@ -138,14 +144,29 @@ namespace PerformanceEvaluator.WEB.Domain
 
         private TimeSpan CalculateResponseTime(string url)
         {
-            var request = (HttpWebRequest) WebRequest.Create(url);
-            var timer = new Stopwatch();
-            timer.Start();
-            var response = (HttpWebResponse) request.GetResponse();
-            timer.Stop();
-            var responseTime = timer.Elapsed;
+            var responseTime = new TimeSpan();
+
+            try
+            {
+                var request = (HttpWebRequest)WebRequest.Create(url);
+                var timer = new Stopwatch();
+                timer.Start();
+                var response = (HttpWebResponse)request.GetResponse();
+                timer.Stop();
+                responseTime = timer.Elapsed;
+            }
+            catch (Exception exception)
+            {
+                responseTime = GetErrorResponseTime();
+                _errorLoggingService.LogError(exception, url);
+            }
 
             return responseTime;
+        }
+
+        private TimeSpan GetErrorResponseTime()
+        {
+            return TimeSpan.FromMilliseconds(-1);
         }
 
         private string GetAbsoluteUrl(string baseUrl, string url)
