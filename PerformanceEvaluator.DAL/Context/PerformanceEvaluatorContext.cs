@@ -7,7 +7,7 @@ namespace PerformanceEvaluator.DAL.Context
     {
         public PerformanceEvaluatorContext() : base("PerformanceEvaluatorConnection")
         {
-            Database.SetInitializer(new DropCreateDatabaseIfModelChanges<PerformanceEvaluatorContext>());
+            Database.SetInitializer(new DropCreateDatabaseAlways<PerformanceEvaluatorContext>());
         }
 
         public virtual DbSet<Website> Websites { get; set; }
