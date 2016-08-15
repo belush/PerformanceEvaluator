@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Web;
 using HtmlAgilityPack;
 using PerformanceEvaluator.DAL.Entities;
 using PerformanceEvaluator.WEB.Models;
@@ -144,15 +145,20 @@ namespace PerformanceEvaluator.WEB.Domain
 
         private TimeSpan CalculateResponseTime(string url)
         {
+            var decodedUrl = HttpUtility.HtmlDecode(url);
             var responseTime = new TimeSpan();
 
             try
             {
-                var request = (HttpWebRequest)WebRequest.Create(url);
+                var request = (HttpWebRequest)WebRequest.Create(decodedUrl);
+                request.UserAgent =
+                 "Mozilla / 5.0(Windows NT 10.0; WOW64) AppleWebKit / 537.36(KHTML, like Gecko) Chrome / 52.0.2743.116 Safari / 537.36";
+
                 var timer = new Stopwatch();
                 timer.Start();
                 var response = (HttpWebResponse)request.GetResponse();
                 timer.Stop();
+
                 responseTime = timer.Elapsed;
             }
             catch (Exception exception)
