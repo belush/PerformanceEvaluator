@@ -3,7 +3,7 @@
     public class ResponseTime
     {
         public int Id { get; set; }
-        //response time in milliseconds
+        // Response time in milliseconds
         public int Time { get; set; }
     }
 }

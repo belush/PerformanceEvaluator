@@ -12,11 +12,11 @@ namespace PerformanceEvaluator.WEB.Domain
 {
     public class PerformanceEvaluatorService
     {
-        private const int NumberOfPageRequests = 5;
-        private const int LimitNumberOfUrls = 15;
+        private const int RequestsPerPageCount = 5;
+        private const int UrlsMaxCount = 15;
         private static readonly object SyncRoot = new object();
-        // first parameter - processed pages number
-        // second parameter - total pages number
+        // First parameter - processed pages number
+        // Second parameter - total pages number
         private static readonly int[] PagesProcessedNumber = new int[2];
         private ErrorLoggingService _errorLoggingService;
 
@@ -92,14 +92,14 @@ namespace PerformanceEvaluator.WEB.Domain
 
         private List<string> GetLimitedNumberOfUrls(List<string> urls)
         {
-            var limitNumberOfUrls = LimitNumberOfUrls;
+            var urlsMaxCount = UrlsMaxCount;
 
-            if (urls.Count < limitNumberOfUrls)
+            if (urls.Count < urlsMaxCount)
             {
-                limitNumberOfUrls = urls.Count;
+                urlsMaxCount = urls.Count;
             }
 
-            urls = urls.GetRange(0, limitNumberOfUrls);
+            urls = urls.GetRange(0, urlsMaxCount);
             return urls;
         }
 
@@ -130,7 +130,7 @@ namespace PerformanceEvaluator.WEB.Domain
         {
             var responseTimes = new List<ResponseTime>();
 
-            for (int i = 0; i < NumberOfPageRequests; i++)
+            for (var i = 0; i < RequestsPerPageCount; i++)
             {
                 var responseTimeSpan = CalculateResponseTime(url);
                 var responseTimeInstance = new ResponseTime()
