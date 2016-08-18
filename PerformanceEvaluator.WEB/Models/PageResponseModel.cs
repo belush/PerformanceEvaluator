@@ -10,7 +10,8 @@ namespace PerformanceEvaluator.WEB.Models
         public string Url { get; set; }
 
         public List<ResponseTime> ResponseTimes { get; set; }
-        //average response time
+
+        // average response time
         public int MidResponseTime
         {
             get

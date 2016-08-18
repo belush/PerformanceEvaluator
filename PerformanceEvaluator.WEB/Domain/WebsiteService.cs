@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using PerformanceEvaluator.DAL.Entities;
 using PerformanceEvaluator.DAL.Repository;
-using PerformanceEvaluator.WEB.Models;
 
 namespace PerformanceEvaluator.WEB.Domain
 {

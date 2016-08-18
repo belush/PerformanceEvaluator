@@ -2,7 +2,6 @@
 using System.IO;
 using System.Text;
 
-
 namespace PerformanceEvaluator.WEB.Domain
 {
     public class ErrorLoggingService
@@ -15,9 +14,10 @@ namespace PerformanceEvaluator.WEB.Domain
             var message = $"{exception.Message} | {url}";
             var text = $"{currentDate} {currentTime} | {message}";
 
-            using (var writer = new StreamWriter(filePath,
-                                            true,
-                                            Encoding.GetEncoding("Windows-1251")))
+            using (var writer = new StreamWriter(
+                                        filePath,
+                                        true,
+                                        Encoding.GetEncoding("Windows-1251")))
             {
                 writer.WriteLine(text, Encoding.Unicode);
             }

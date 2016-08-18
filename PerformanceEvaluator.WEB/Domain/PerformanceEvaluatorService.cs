@@ -12,12 +12,12 @@ namespace PerformanceEvaluator.WEB.Domain
 {
     public class PerformanceEvaluatorService
     {
-        private static readonly object SyncRoot = new object();
-        //first parameter - processed pages number
-        //second parameter - total pages number
-        private static readonly int[] PagesProcessedNumber = new int[2];
         private const int NumberOfPageRequests = 5;
         private const int LimitNumberOfUrls = 15;
+        private static readonly object SyncRoot = new object();
+        // first parameter - processed pages number
+        // second parameter - total pages number
+        private static readonly int[] PagesProcessedNumber = new int[2];
         private ErrorLoggingService _errorLoggingService;
 
         public PerformanceEvaluatorService()
